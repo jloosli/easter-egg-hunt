@@ -1,0 +1,6 @@
+<div *ngIf="showLoading" id="loadingMessage">{{loadingMessage}}</div>
+<canvas #myCanvas></canvas>
+<video #myVideo style="display: none;"></video>
+<button (click)="start()" color="accent" mat-fab>
+  <mat-icon>photo_camera</mat-icon>
+</button>
