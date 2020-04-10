@@ -8,19 +8,21 @@ import {map, take} from 'rxjs/operators';
 })
 export class EggsService {
 
-  totalEggs = 2;
+  totalEggs = 32;
   private _eggs$ = new ReplaySubject<Set<string>>();
   eggs$: Observable<string[]> = this._eggs$.pipe(
     map(eggsSet => Array.from(eggsSet)),
   );
 
   constructor() {
-    localforage.getItem<Set<string>>('eggs').then(eggs => {
+    localforage.getItem<string[]>('eggs').then(eggs => {
       if (eggs) {
-        this._eggs$.next(eggs);
+        this._eggs$.next(new Set<string>(eggs));
       } else {
-        this._eggs$.next(new Set());
+        this._eggs$.next(new Set<string>());
       }
+    }).catch(() => {
+      this._eggs$.next(new Set<string>());
     });
   }
 
@@ -29,10 +31,10 @@ export class EggsService {
     if (!eggId) {
       return false;
     }
-    this._eggs$.pipe(take(1)).subscribe(eggs => {
+    this._eggs$.pipe(take(1)).subscribe((eggs: Set<string>) => {
       eggs.add(eggId as string);
       this._eggs$.next(eggs);
-      localforage.setItem<Set<string>>('eggs', eggs);
+      localforage.setItem<string[]>('eggs', Array.from(eggs));
     });
 
     return true;
@@ -40,7 +42,7 @@ export class EggsService {
 
   removeEggs() {
     localforage.removeItem('eggs');
-    this._eggs$.next(new Set());
+    this._eggs$.next(new Set<string>());
   }
 
   cleanedEggId(maybeEgg: string): string | boolean {

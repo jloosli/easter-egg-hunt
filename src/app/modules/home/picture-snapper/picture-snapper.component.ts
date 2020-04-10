@@ -5,6 +5,7 @@ import {
   Component,
   ElementRef,
   EventEmitter,
+  Input,
   NgZone,
   OnInit,
   Output,
@@ -24,13 +25,22 @@ export class PictureSnapperComponent implements OnInit, AfterViewInit {
   @ViewChild('myVideo') videoEl: ElementRef<HTMLVideoElement>;
   canvas: CanvasRenderingContext2D;
   video: HTMLVideoElement;
-  devices: MediaDeviceInfo[] = [];
 
-  loadingMessage = '🎥 Unable to access video stream (please make sure you have a webcam enabled)';
+  loadingMessage = '';
   showLoading = true;
   outputData = 'No Data Detected';
 
+  stream: MediaStream;
+  usingCamera = false;
   @Output() eggFound = new EventEmitter<string>();
+
+  @Input()
+  set stopCamera(val: any) {
+    console.log(val);
+    if (this.usingCamera) {
+      this.stop();
+    }
+  };
 
   constructor(private ngZone: NgZone, private cdr: ChangeDetectorRef) {
   }
@@ -41,8 +51,10 @@ export class PictureSnapperComponent implements OnInit, AfterViewInit {
   ngAfterViewInit(): void {
     this.canvas = this.canvasEl.nativeElement.getContext('2d');
     this.video = this.videoEl.nativeElement;
+    this.canvasEl.nativeElement.height = this.video.videoHeight;
+    this.canvasEl.nativeElement.width = this.video.videoWidth;
 
-
+    this.drawBunny();
   }
 
   drawLine(begin, end, color) {
@@ -55,7 +67,8 @@ export class PictureSnapperComponent implements OnInit, AfterViewInit {
   }
 
   tick() {
-    this.loadingMessage = '⌛ Loading video...';
+    if (!this.usingCamera) return;
+    this.loadingMessage = '⌛ Loading video...🎥';
     if (this.video.readyState === this.video.HAVE_ENOUGH_DATA) {
       this.showLoading = false;
 
@@ -83,13 +96,33 @@ export class PictureSnapperComponent implements OnInit, AfterViewInit {
   }
 
   start() {
+    this.usingCamera = true;
     navigator.mediaDevices.getUserMedia({video: {facingMode: {ideal: 'environment'}}})
       .then((stream) => {
+        this.stream = stream;
         this.video.srcObject = stream;
         this.video.setAttribute('playsinline', 'true'); // required to tell iOS safari we don't want fullscreen
         this.video.play();
         this.ngZone.runOutsideAngular(() => requestAnimationFrame(() => this.tick()));
       });
+
+  }
+
+  stop() {
+    this.usingCamera = false;
+    this.stream?.getTracks().forEach(track => track.stop());
+    this.drawBunny();
+  }
+
+  drawBunny() {
+    this.canvas.beginPath();
+    this.canvas.rect(0, 0, this.canvasEl.nativeElement.width, this.canvasEl.nativeElement.height);
+    this.canvas.fillStyle = 'white';
+    this.canvas.fill();
+
+    const bunnyImage = new Image();
+    bunnyImage.src = '/assets/easter_bunny.png';
+    bunnyImage.onload = () => this.canvas.drawImage(bunnyImage, 0, 0, this.canvasEl.nativeElement.width, this.canvasEl.nativeElement.height);
   }
 
 }

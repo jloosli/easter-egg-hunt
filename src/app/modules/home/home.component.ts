@@ -13,6 +13,9 @@ import {ActivatedRoute, ParamMap, Router} from '@angular/router';
 export class HomeComponent implements OnInit {
 
   vm$: Observable<{ eggs: string[], total: number }>;
+  celebrating = false;
+  stopEvent = 0;
+  isFound = true;
 
   constructor(private eggsSvc: EggsService, private cdr: ChangeDetectorRef, private route: ActivatedRoute,
               private router: Router,
@@ -20,6 +23,8 @@ export class HomeComponent implements OnInit {
     this.vm$ = combineLatest([this.eggsSvc.eggs$]).pipe(
       map(([eggs]) => ({eggs, total: this.eggsSvc.totalEggs})),
     );
+
+    window['celebrate'] = (val) => this.celebrate(val);
   }
 
   ngOnInit(): void {
@@ -38,8 +43,21 @@ export class HomeComponent implements OnInit {
   }
 
   addEgg(id) {
-    this.eggsSvc.addEgg(id);
+    const foundEgg = this.eggsSvc.addEgg(id);
+    this.celebrate(!!foundEgg);
     this.cdr.detectChanges();
+  }
+
+  celebrate(isNew: boolean) {
+    debugger;
+    this.isFound = isNew;
+    this.stopEvent = Math.random();
+    this.celebrating = true;
+    this.cdr.detectChanges();
+    setTimeout(() => {
+      this.celebrating = false;
+      this.cdr.detectChanges();
+    }, 3000);
   }
 
 }

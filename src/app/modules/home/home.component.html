@@ -1,6 +1,9 @@
-<mat-toolbar color="primary"><span>Jefferson Ave. Easter Egg Hunt</span></mat-toolbar>
-<div *ngIf="vm$ | async as vm">
-  {{vm.eggs | json}}
+<mat-toolbar color="primary"><span>Virtual Easter Egg Hunt</span></mat-toolbar>
+<div *ngIf="vm$ | async as vm" class="counter">
   <app-egg-counter [found]="vm.eggs" [total]="vm.total"></app-egg-counter>
 </div>
-<app-picture-snapper (eggFound)="addEgg($event)"></app-picture-snapper>
+<app-picture-snapper (eggFound)="addEgg($event)" [stopCamera]="stopEvent"></app-picture-snapper>
+<div [class.active]="celebrating" class="announcement">
+  <span *ngIf="isFound">You found an egg!</span>
+  <span *ngIf="!isFound">You already found that egg!</span>
+</div>

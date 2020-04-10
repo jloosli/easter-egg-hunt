@@ -1,11 +1,11 @@
 {
   "name": "easter-egg-hunt",
   "short_name": "easter-egg-hunt",
-  "theme_color": "#1976d2",
-  "background_color": "#fafafa",
+  "theme_color": "#9c27b0",
+  "background_color": "#9c27b0",
   "display": "standalone",
   "scope": "./",
-  "start_url": "./",
+  "start_url": "./?utm=pwa",
   "icons": [
     {
       "src": "assets/icons/icon-72x72.png",

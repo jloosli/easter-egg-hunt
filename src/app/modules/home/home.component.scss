@@ -1,5 +1,44 @@
 :host {
-  display: flex;
-  flex-flow: column;
-  align-items: center;
+  display: grid;
+  grid-template: " toolbar " 80px " found " auto " snapper " auto
+  / 1fr;
+  height: 100vh;
+  justify-items: center;
+}
+
+mat-toolbar {
+  grid-area: toolbar;
+}
+
+.counter {
+  grid-area: found;
+}
+
+app-picture-snapper {
+  grid-area: snapper;
+}
+
+.announcement {
+  height: 0;
+  width: 100vw;
+  z-index: 2;
+  position: absolute;
+  top: 0;
+  place-content: center;
+  display: none;
+
+  &.active {
+    display: grid;
+    height: 100vh;
+
+    span {
+      transform: rotate(-30deg);
+    }
+  }
+
+  span {
+    font-size: 5vh;
+  }
+
+  animation: 1s ease-in;
 }
