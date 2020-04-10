@@ -1,0 +1,19 @@
+{
+  "hosting": {
+    "public": "dist/easter-egg-hunt",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ],
+    "predeploy": [
+      "ng build --prod"
+    ]
+  }
+}

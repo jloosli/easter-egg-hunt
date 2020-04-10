@@ -42,14 +42,13 @@ export class HomeComponent implements OnInit {
     });
   }
 
-  addEgg(id) {
-    const foundEgg = this.eggsSvc.addEgg(id);
+  async addEgg(id) {
+    const foundEgg = await this.eggsSvc.addEgg(id);
     this.celebrate(!!foundEgg);
     this.cdr.detectChanges();
   }
 
   celebrate(isNew: boolean) {
-    debugger;
     this.isFound = isNew;
     this.stopEvent = Math.random();
     this.celebrating = true;

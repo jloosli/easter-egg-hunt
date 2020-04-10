@@ -31,11 +31,13 @@ export class EggsService {
     if (!eggId) {
       return false;
     }
-    this._eggs$.pipe(take(1)).subscribe((eggs: Set<string>) => {
-      eggs.add(eggId as string);
-      this._eggs$.next(eggs);
-      localforage.setItem<string[]>('eggs', Array.from(eggs));
-    });
+    const eggs: Set<string> = await this._eggs$.pipe(take(1)).toPromise();
+    if (eggs.has(eggId as string)) {
+      return false;
+    }
+    eggs.add(eggId as string);
+    this._eggs$.next(eggs);
+    await localforage.setItem<string[]>('eggs', Array.from(eggs));
 
     return true;
   }
